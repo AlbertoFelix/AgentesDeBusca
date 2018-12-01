@@ -5,5 +5,5 @@
 	Busca em Profundidade
 	Busca A* com Heurística
 '''
-
+from Grafo import grafo
 

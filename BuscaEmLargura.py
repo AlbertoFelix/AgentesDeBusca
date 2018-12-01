@@ -1,1 +1,1 @@
-print("teste")
+from Grafo import grafo
