@@ -5,3 +5,8 @@
 	Busca em Profundidade
 	Busca A* com Heurística
 '''
+
+import pandas as pd
+
+cidades = open('./arquivos/distancias.csv')
+
