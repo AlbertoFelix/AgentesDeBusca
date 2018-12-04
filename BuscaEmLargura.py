@@ -1,18 +1,11 @@
-def busca_largura(graph, start, goal):
+def busca_largura(grafo, inicio, destino):
 
-    queue = [(start, [start])]
-    while queue:
-        (vertex, path) = queue.pop(0)
-        for next in set([i for i in graph.neighbors(vertex)]) - set(path):
-            if next == goal:
-                yield path + [next]
-            else:
-                queue.append((next, path + [next]))
-
-def busca_largura_not_recursive(grafo, inicio, destino):
     visitado = []
 
     fila = [inicio]
+
+    if inicio == destino:
+        return "Destino já alcançado"
 
     while fila:
 
@@ -26,3 +19,43 @@ def busca_largura_not_recursive(grafo, inicio, destino):
                 fila.append(proximo)
         if cidade == destino:
             return visitado
+    return "Não existe um Caminho"
+
+
+def busca_largura_melhorCaminho(grafo, inicio, destino):
+
+    visitado = []
+
+    fila = [[inicio]]
+
+
+    if inicio == destino:
+        return "Destino já alcançado"
+
+
+    while fila:
+
+        caminho = fila.pop(0)
+
+        cidade = caminho[-1]
+
+        if cidade not in visitado:
+
+            visinhos = grafo[cidade]
+
+            for visinho in visinhos:
+                novo_caminho = list(caminho)
+                novo_caminho.append(visinho)
+                fila.append(novo_caminho)
+
+                if visinho == destino:
+                    return novo_caminho
+
+
+            visitado.append(cidade)
+
+
+    return "Não existe um Caminho"
+
+
+
