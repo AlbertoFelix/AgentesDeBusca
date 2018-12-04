@@ -1,7 +1,7 @@
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
-from BuscaAAsterisco import *
+
 
 def getGrafo():
     cidades = open('./arquivos/distancias.csv')

@@ -15,6 +15,7 @@ grafo = getGrafo()
 ordemCidades, matrizDist = getDistanciaTotal()
 grafo = getGrafo()
 
+showGrafo(grafo)
 print(aAsterisco(grafo, ordemCidades, matrizDist, 'Arad', 'Neamt'))
 print(next(busca_largura(grafo, 'Arad', 'Bucharest')))
-print(bPf(grafo, 'Arad', 'Neamt'))
+print(busca_largura_not_recursive(grafo, 'Arad', 'Bucharest'))
