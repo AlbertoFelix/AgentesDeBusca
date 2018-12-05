@@ -5,7 +5,7 @@ def busca_largura(grafo, inicio, destino):
     fila = [inicio]
 
     if inicio == destino:
-        return "Destino já alcançado"
+        return [inicio]
 
     while fila:
 
@@ -30,7 +30,7 @@ def busca_largura_melhorCaminho(grafo, inicio, destino):
 
 
     if inicio == destino:
-        return "Destino já alcançado"
+        return [inicio]
 
 
     while fila:
