@@ -1,15 +1,14 @@
-def bPf(grafo, inicio, destino, visitado=None):
-    if visitado is None:
-        visitado = [inicio]
+def busca_profundidade(grafo, inicio, destino, visitados=None):
+
+    if visitados is None:
+        visitados = [inicio]
 
     if inicio == destino:
-        return visitado
+        return visitados
 
-    for next in (grafo[inicio]):
-        if (next not in visitado):
-            print(next)
-            return bPf(grafo, next, destino, visitado + [next])
+    for proximo in grafo[inicio]:
 
-#def busca_profundidade(grafo, inicio, destino):
+        if proximo not in visitados and destino not in visitados:
+            visitados = busca_profundidade(grafo, proximo, destino, visitados + [proximo])
 
-
+    return visitados
