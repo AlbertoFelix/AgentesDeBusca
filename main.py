@@ -53,6 +53,10 @@ class Application:
         self.caminho = Label(self.frame2, text='')
         self.caminho.pack()
 
+        #Grafo
+        self.canvas = FigureCanvasTkAgg(self.showGrafo(), master=self.frame2)
+        self.canvas.get_tk_widget().pack(side=TOP, anchor=W, fill=BOTH, expand=True)
+
         '''Frame com o tipo de busca e o botão de Buscar'''
         self.frame3 = Frame(master)
         self.frame3["pady"] = 10
@@ -73,8 +77,6 @@ class Application:
         self.buscar = Button(self.frame3, text='Buscar', command=self.buscarCaminho, width=10)
         self.buscar.pack(side=RIGHT, anchor=E)
 
-
-
     def buscarCaminho(self):
         if self.tipo.get() == 'Busca em largura':
             self.caminho['text'] = busca_largura(self.grafo, self.de.get(), self.para.get())
@@ -91,6 +93,16 @@ class Application:
         else:
             self.caminho['text'] = 'Opção Inválida'
 
+    def showGrafo(self):
+        f = plt.figure(1, figsize=(9, 4))  # definindo o tamanho da figura
+        pos = nx.fruchterman_reingold_layout(self.grafo)  # definindo o algoritmo do layout
+        plt.axis('off')  # retira as bordas
+        nx.draw_networkx_nodes(self.grafo, pos, node_size=250)  # plota os nos
+        nx.draw_networkx_edges(self.grafo, pos, alpha=0.8)  # plota as arestas
+        nx.draw_networkx_labels(self.grafo, pos, font_size=10)
+
+        return f
+
 
 
 def main():
@@ -99,7 +111,7 @@ def main():
 
     root = Tk() #Cria a janela
     root.title('Agentes de Busca') #Seta título da janela
-    root.geometry('600x300') #Seta tamanho inicial da janela
+    root.geometry('900x550') #Seta tamanho inicial da janela
 
     Application(ordemCidades, matrizDist, grafo, root)
     root.mainloop()
