@@ -1,8 +1,7 @@
 '''Import Interface Gráfica'''
 from tkinter import *
 from tkinter.ttk import Combobox
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 '''Import Algorítmos de Busca'''
 from Grafo import *
@@ -15,8 +14,11 @@ class Application:
         self.ordemCidades = ordemCidades
         self.matrizDist = matrizDist
         self.grafo = grafo
+        self.tracarCaminho = False
+        self.rota = None
+        self.drawGrafo = self.showGrafo(self.tracarCaminho, self.rota)
 
-        self.tiposBusca = ['Busca em largura', 'Busca em largura melhor caminho', 'Busca em Profundidade', 'A*']
+        self.tiposBusca = ['Busca em largura', 'Busca em Profundidade', 'A*']
 
         '''Frame com De e Para'''
         self.frame1 = Frame(master)
@@ -54,7 +56,7 @@ class Application:
         self.caminho.pack()
 
         #Grafo
-        self.canvas = FigureCanvasTkAgg(self.showGrafo(), master=self.frame2)
+        self.canvas = FigureCanvasTkAgg(self.drawGrafo, master=self.frame2)
         self.canvas.get_tk_widget().pack(side=TOP, anchor=W, fill=BOTH, expand=True)
 
         '''Frame com o tipo de busca e o botão de Buscar'''
@@ -79,31 +81,62 @@ class Application:
 
     def buscarCaminho(self):
         if self.tipo.get() == 'Busca em largura':
-            self.caminho['text'] = busca_largura(self.grafo, self.de.get(), self.para.get())
+            self.tracarCaminho = True
+            self.rota = busca_largura_melhorCaminho(self.grafo, self.de.get(), self.para.get()) #Define a nova Rota
 
-        elif self.tipo.get() == 'Busca em largura melhor caminho':
-            self.caminho['text'] = busca_largura_melhorCaminho(self.grafo, self.de.get(), self.para.get())
+            self.caminho['text'] = self.getCaminho(self.rota)
+            self.drawGrafo = self.showGrafo(self.tracarCaminho, self.rota) #Define o novo grafo
+            self.canvas.draw() #Desenha o novo grafo
 
         elif self.tipo.get() == 'Busca em Profundidade':
-            self.caminho['text'] = busca_profundidade(self.grafo, self.de.get(), self.para.get())
+            self.tracarCaminho = True
+            self.rota = busca_profundidade(self.grafo, self.de.get(), self.para.get()) #Define a nova Rota
+
+            self.caminho['text'] = self.getCaminho(self.rota)
+            self.drawGrafo = self.showGrafo(self.tracarCaminho, self.rota) #Define o novo grafo
+            self.canvas.draw() #Desenha o novo grafo
 
         elif self.tipo.get() == 'A*':
-            self.caminho['text'] = aAsterisco(self.grafo, self.ordemCidades, self.matrizDist, self.de.get(), self.para.get())
+            self.tracarCaminho = True
+            self.rota = aAsterisco(self.grafo, self.ordemCidades, self.matrizDist, self.de.get(), self.para.get()) #Define a nova Rota
+
+            self.caminho['text'] = self.getCaminho(self.rota)
+            self.drawGrafo = self.showGrafo(self.tracarCaminho, self.rota) #Define o novo grafo
+            self.canvas.draw() #Desenha o novo grafo
 
         else:
             self.caminho['text'] = 'Opção Inválida'
 
-    def showGrafo(self):
-        f = plt.figure(1, figsize=(9, 4))  # definindo o tamanho da figura
+    def getCaminho(self, caminho):
+        rota = ''
+        for i in range(len(caminho)):
+            if i == len(caminho) - 1:
+                rota += caminho[i]
+            else:
+                rota += caminho[i]
+                rota += '=> '
+
+        return rota
+
+    def showGrafo(self, tracarCaminho, rota):
+        plt.cla()
+        f = plt.figure(8, figsize=(17, 7))  # definindo o tamanho da figura
         pos = nx.fruchterman_reingold_layout(self.grafo)  # definindo o algoritmo do layout
         plt.axis('off')  # retira as bordas
-        nx.draw_networkx_nodes(self.grafo, pos, node_size=250)  # plota os nos
-        nx.draw_networkx_edges(self.grafo, pos, alpha=0.8)  # plota as arestas
-        nx.draw_networkx_labels(self.grafo, pos, font_size=10)
+        nx.draw_networkx_nodes(self.grafo, pos, node_size=180, node_color='cyan') #Plota os nos
+        nx.draw_networkx_edges(self.grafo, pos, alpha=0.8)  #Plota as arestas
+        nx.draw_networkx_labels(self.grafo, pos, font_size=9) #Coloca o nome nas cidades
+
+        if tracarCaminho == True:
+            self.mostrarCaminho(self.grafo, pos, rota)
 
         return f
 
-
+    def mostrarCaminho(self, grafo, pos, rota):
+        edges = [(rota[n], rota[n + 1]) for n in range(len(rota) - 1)]
+        nx.draw_networkx_edges(grafo, pos=pos, edgelist=edges, edge_color='yellow', width=4.0, alpha=0.5) #Pinta o caminho de amarelo
+        nx.draw_networkx_nodes(grafo, pos, nodelist=[rota[0]], node_size=80, node_color='green') #Pinta o ponto inicial como Verde
+        nx.draw_networkx_nodes(grafo, pos, nodelist=[rota[-1]], node_size=80, node_color='red') #Pinta o ponto final de Vermelho
 
 def main():
     ordemCidades, matrizDist = getDistanciaTotal()
@@ -111,7 +144,7 @@ def main():
 
     root = Tk() #Cria a janela
     root.title('Agentes de Busca') #Seta título da janela
-    root.geometry('900x550') #Seta tamanho inicial da janela
+    root.geometry('1350x850') #Seta tamanho inicial da janela
 
     Application(ordemCidades, matrizDist, grafo, root)
     root.mainloop()
